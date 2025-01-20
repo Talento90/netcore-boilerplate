@@ -23,16 +23,6 @@ namespace HappyCode.NetCoreBoilerplate.Api.UnitTests.Controllers
             _carServiceMock = Mocker.GetMock<ICarService>();
         }
 
-        [Fact]
-        public async Task GetAll_should_call_GetAllSortedByPlateAsync_onto_service()
-        {
-            //when
-            await Controller.GetAll(default);
-
-            //then
-            _carServiceMock.Verify(x => x.GetAllSortedByPlateAsync(It.IsAny<CancellationToken>()), Times.Once);
-        }
-
         [Theory, AutoData]
         public async Task GetAll_should_return_Ok_with_expected_result(IEnumerable<CarDto> cars)
         {
@@ -41,7 +31,7 @@ namespace HappyCode.NetCoreBoilerplate.Api.UnitTests.Controllers
                 .ReturnsAsync(cars);
 
             //when
-            var result = await Controller.GetAll(default) as OkObjectResult;
+            var result = await Controller.GetAllAsync(default) as OkObjectResult;
 
             //then
             result.Should().NotBeNull();
@@ -49,6 +39,8 @@ namespace HappyCode.NetCoreBoilerplate.Api.UnitTests.Controllers
             result.Value.Should().BeAssignableTo<IEnumerable<CarDto>>();
             var value = result.Value as IEnumerable<CarDto>;
             value.Should().HaveCount(cars.Count());
+
+            _carServiceMock.VerifyAll();
         }
     }
 }

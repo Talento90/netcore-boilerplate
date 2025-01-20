@@ -1,9 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <NuGetAuditMode>all</NuGetAuditMode>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <Content Include="appsettings.json" CopyToOutputDirectory="Always" />
   </ItemGroup>
@@ -12,9 +12,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="dbup-sqlserver" Version="4.5.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.11" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.11" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="3.1.11" />
+    <PackageReference Include="dbup-sqlserver" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Azure.Identity" />
+    <PackageReference Include="System.Text.Json" />
+    <PackageReference Include="Microsoft.Data.SqlClient" />
+    <PackageReference Include="System.Text.RegularExpressions" />
   </ItemGroup>
 </Project>

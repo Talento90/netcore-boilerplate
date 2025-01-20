@@ -4,6 +4,7 @@
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
 dist/
+*.db
 
 # Git files
 *.orig
@@ -32,6 +33,7 @@ bld/
 
 # Visual Studio cache/options directory
 .vs/
+
 # MSTest test Results
 [Tt]est[Rr]esult*/
 [Bb]uild[Ll]og.*
@@ -39,6 +41,9 @@ bld/
 # NUNIT
 *.VisualState.xml
 TestResult.xml
+
+# ApprovalTests.Net
+*.received.*
 
 # Build Results of an ATL Project
 [Dd]ebugPS/
@@ -310,7 +315,6 @@ __pycache__/
 
 # OpenCover UI analysis results
 OpenCover/
-
 
 # Local config overrides
 appsettings.local.json

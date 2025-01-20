@@ -1,16 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using HappyCode.NetCoreBoilerplate.Core;
 using HappyCode.NetCoreBoilerplate.Core.Dtos;
 using HappyCode.NetCoreBoilerplate.Core.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.FeatureManagement;
+using Microsoft.FeatureManagement.Mvc;
 
 namespace HappyCode.NetCoreBoilerplate.Api.Controllers
 {
+    [FeatureGate(FeatureFlags.DockerCompose)]
     [Route("api/employees")]
     public class EmployeesController : ApiControllerBase
     {
@@ -25,7 +23,7 @@ namespace HappyCode.NetCoreBoilerplate.Api.Controllers
 
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<EmployeeDto>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetAll(
+        public async Task<IActionResult> GetAllAsync(
             CancellationToken cancellationToken = default)
         {
             var result = await _employeeRepository.GetAllAsync(cancellationToken);
@@ -35,7 +33,7 @@ namespace HappyCode.NetCoreBoilerplate.Api.Controllers
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(EmployeeDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Get(
+        public async Task<IActionResult> GetAsync(
             int id,
             CancellationToken cancellationToken = default)
         {
@@ -50,7 +48,7 @@ namespace HappyCode.NetCoreBoilerplate.Api.Controllers
         [HttpGet("{id}/details")]
         [ProducesResponseType(typeof(EmployeeDetailsDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetWithDetails(
+        public async Task<IActionResult> GetWithDetailsAsync(
             int id,
             CancellationToken cancellationToken = default)
         {
@@ -65,10 +63,10 @@ namespace HappyCode.NetCoreBoilerplate.Api.Controllers
         [HttpGet("oldest")]
         [ProducesResponseType(typeof(EmployeeDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetOldest(
+        public async Task<IActionResult> GetOldestAsync(
             CancellationToken cancellationToken = default)
         {
-            if (await _featureManager.IsEnabledAsync(FeatureFlags.Santa))
+            if (await _featureManager.IsEnabledAsync(FeatureFlags.Santa.ToString()))
             {
                 return Ok(new EmployeeDto
                 {
@@ -91,7 +89,7 @@ namespace HappyCode.NetCoreBoilerplate.Api.Controllers
         [HttpPut("{id}")]
         [ProducesResponseType(typeof(EmployeeDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Put(
+        public async Task<IActionResult> PutAsync(
             [FromRoute] int id,
             [FromBody] EmployeePutDto employeePutDto,
             CancellationToken cancellationToken = default)
@@ -106,19 +104,19 @@ namespace HappyCode.NetCoreBoilerplate.Api.Controllers
 
         [HttpPost]
         [ProducesResponseType(typeof(EmployeeDto), StatusCodes.Status201Created)]
-        public async Task<IActionResult> Post(
+        public async Task<IActionResult> PostAsync(
             [FromBody] EmployeePostDto employeePostDto,
             CancellationToken cancellationToken = default)
         {
             var result = await _employeeRepository.InsertAsync(employeePostDto, cancellationToken);
-            Response.Headers.Add("x-date-created", DateTime.UtcNow.ToString("s"));
+            Response.Headers.Append("x-date-created", DateTime.UtcNow.ToString("s"));
             return CreatedAtAction("Get", new { id = result.Id }, result);
         }
 
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Delete(
+        public async Task<IActionResult> DeleteAsync(
             int id,
             CancellationToken cancellationToken = default)
         {

@@ -1,18 +1,15 @@
+using HappyCode.NetCoreBoilerplate.Api.BackgroundServices;
 using HappyCode.NetCoreBoilerplate.Api.Infrastructure.Filters;
 using HappyCode.NetCoreBoilerplate.Api.IntegrationTests.Infrastructure.DataFeeders;
+using HappyCode.NetCoreBoilerplate.Api.IntegrationTests.Infrastructure.Fakes;
 using HappyCode.NetCoreBoilerplate.Core;
-using HappyCode.NetCoreBoilerplate.Core.Extensions;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
+using HappyCode.NetCoreBoilerplate.Core.Registrations;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FeatureManagement;
 
 namespace HappyCode.NetCoreBoilerplate.Api.IntegrationTests.Infrastructure
 {
-    public class TestStartup : Startup
+    internal class TestStartup : Startup
     {
         public TestStartup(IConfiguration configuration)
             : base(configuration)
@@ -28,11 +25,10 @@ namespace HappyCode.NetCoreBoilerplate.Api.IntegrationTests.Infrastructure
                 {
                     options.Filters.Add<ValidateModelStateFilter>();
                 })
-                .AddDataAnnotations()
-                .SetCompatibilityVersion(CompatibilityVersion.Latest);
+                .AddDataAnnotations();
 
             services.AddCoreComponents();
-            // services.AddTransient<ISomeService, SomeService>();  //if needed override registration with own test fakes
+            services.AddSingleton<IPingService, FakePingService>();  //override registration with own fakes
 
             services.AddFeatureManagement();
 
