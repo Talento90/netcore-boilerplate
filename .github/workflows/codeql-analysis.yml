@@ -1,29 +1,55 @@
-name: "CodeQL"
+---
+name: CodeQL Analysis
 
 on:
   push:
+    branches: [master]
+    paths-ignore:
+      - '**.md'
+      - '**.yml'
+
+  pull_request:
+    branches: [master]
+    paths-ignore:
+      - '**.md'
+
+  workflow_dispatch:
+
   schedule:
-    - cron: '13 6 * * 0'
+    - cron: '0 6 * * Sun'
 
 jobs:
-  analyze:
-    name: Analyze
+  codeql-analyze:
+    name: CodeQL Analyze
     runs-on: ubuntu-latest
+
     permissions:
       security-events: write
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v1
-      with:
-        languages: csharp
-        queries: +security-and-quality
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.x
 
-    - name: Autobuild
-      uses: github/codeql-action/autobuild@v1
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: csharp
+          queries: +security-and-quality
+          config: |
+            paths-ignore:
+              - '**/generated/**/*.g.*.cs'
+            query-filters:
+              - exclude:
+                  id:
+                    - cs/dereferenced-value-may-be-null
 
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v1
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3

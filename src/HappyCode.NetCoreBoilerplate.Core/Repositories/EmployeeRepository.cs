@@ -5,7 +5,6 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using HappyCode.NetCoreBoilerplate.Core.Dtos;
 using HappyCode.NetCoreBoilerplate.Core.Extensions;
-using System.Collections.Generic;
 
 namespace HappyCode.NetCoreBoilerplate.Core.Repositories
 {
@@ -20,7 +19,7 @@ namespace HappyCode.NetCoreBoilerplate.Core.Repositories
         Task<EmployeeDto> UpdateAsync(int id, EmployeePutDto employeePutDto, CancellationToken cancellationToken);
     }
 
-    public class EmployeeRepository : RepositoryBase<Employee>, IEmployeeRepository
+    internal class EmployeeRepository : RepositoryBase<Employee>, IEmployeeRepository
     {
         public EmployeeRepository(EmployeesContext dbContext) : base(dbContext)
         {

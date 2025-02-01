@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using HappyCode.NetCoreBoilerplate.Core;
 using HappyCode.NetCoreBoilerplate.Core.Dtos;
 using HappyCode.NetCoreBoilerplate.Core.Services;
@@ -10,6 +7,7 @@ using Microsoft.FeatureManagement.Mvc;
 
 namespace HappyCode.NetCoreBoilerplate.Api.Controllers
 {
+    [FeatureGate(FeatureFlags.DockerCompose)]
     [Route("api/cars")]
     public class CarsController : ApiControllerBase
     {
@@ -22,7 +20,7 @@ namespace HappyCode.NetCoreBoilerplate.Api.Controllers
 
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<CarDto>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetAll(
+        public async Task<IActionResult> GetAllAsync(
             CancellationToken cancellationToken = default)
         {
             var result = await _carService.GetAllSortedByPlateAsync(cancellationToken);

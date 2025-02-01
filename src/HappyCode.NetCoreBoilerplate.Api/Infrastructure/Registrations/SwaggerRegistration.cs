@@ -1,11 +1,13 @@
-using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using HappyCode.NetCoreBoilerplate.Api.Infrastructure.Filters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 
 namespace HappyCode.NetCoreBoilerplate.Api.Infrastructure.Registrations
 {
+    [ExcludeFromCodeCoverage]
     public static class SwaggerRegistration
     {
         public static void AddSwagger(this IServiceCollection services, IConfiguration configuration)
@@ -37,23 +39,8 @@ namespace HappyCode.NetCoreBoilerplate.Api.Infrastructure.Registrations
                     Type = SecuritySchemeType.ApiKey,
                 });
 
-                swaggerOptions.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
-                     {
-                        new OpenApiSecurityScheme
-                        {
-                            Name = "ApiKey",
-                            Type = SecuritySchemeType.ApiKey,
-                            In = ParameterLocation.Header,
-                            Reference = new OpenApiReference
-                            {
-                                Type = ReferenceType.SecurityScheme,
-                                Id = "ApiKey",
-                            },
-                        },
-                        Array.Empty<string>()
-                     }
-                });
+                swaggerOptions.OperationFilter<SecurityRequirementSwaggerOperationFilter>();
+                swaggerOptions.DocumentFilter<FeatureFlagSwaggerDocumentFilter>();
             });
         }
     }

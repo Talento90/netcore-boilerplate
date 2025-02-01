@@ -1,8 +1,8 @@
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using HappyCode.NetCoreBoilerplate.Api.Infrastructure.Configurations;
 using HappyCode.NetCoreBoilerplate.Core;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Options;
@@ -10,9 +10,10 @@ using Microsoft.FeatureManagement;
 
 namespace HappyCode.NetCoreBoilerplate.Api.Infrastructure.Filters
 {
-    public class ApiKeyAuthorizationFilter : IAsyncAuthorizationFilter
+    public partial class ApiKeyAuthorizationFilter : IAsyncAuthorizationFilter
     {
-        private static readonly Regex _apiKeyRegex = new Regex(@"^[Aa][Pp][Ii][Kk][Ee][Yy]\s+(?<ApiKey>.+)$", RegexOptions.Compiled);
+        [GeneratedRegex(@"^[Aa][Pp][Ii][Kk][Ee][Yy]\s+(?<ApiKey>.+)$")]
+        private static partial Regex ApiKeyRegex();
 
         private readonly IOptions<ApiKeySettings> _options;
         private readonly IFeatureManager _featureManager;
@@ -25,7 +26,13 @@ namespace HappyCode.NetCoreBoilerplate.Api.Infrastructure.Filters
 
         public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
         {
-            if (!(await _featureManager.IsEnabledAsync(FeatureFlags.ApiKey)))
+            if (!await _featureManager.IsEnabledAsync(FeatureFlags.ApiKey.ToString()))
+            {
+                return;
+            }
+
+            bool hasAllowAnonymous = context.ActionDescriptor.EndpointMetadata.OfType<IAllowAnonymous>().Any();
+            if (hasAllowAnonymous)
             {
                 return;
             }
@@ -43,7 +50,7 @@ namespace HappyCode.NetCoreBoilerplate.Api.Infrastructure.Filters
                 return;
             }
 
-            var match = _apiKeyRegex.Match(authorization);
+            var match = ApiKeyRegex().Match(authorization);
             if (!match.Success)
             {
                 context.Result = new UnauthorizedObjectResult("ApiKey Authorization header value not match `ApiKey xxx-xxx`");
